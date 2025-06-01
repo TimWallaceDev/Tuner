@@ -1,3 +1,3 @@
-# Guitar Tuner
+# Tuner
 
-A simple tuner for guitar and other instruments.
+A simple tuner for guitar and other instruments
