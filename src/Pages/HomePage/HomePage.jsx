@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import './HomePage.scss';
 
 // Standard guitar tuning frequencies (E2 to E6)
 const GUITAR_NOTES = {
@@ -150,55 +151,41 @@ const HomePage = () => {
   };
 
   return (
-    <div style={{ textAlign: 'center', padding: '2rem' }}>
+    <div className="home-page">
       <h1>Guitar Tuner</h1>
       
-      {!hasPermission ? (
-        <button 
-          onClick={requestMicrophonePermission}
-          style={{
-            padding: '0.5rem 1rem',
-            backgroundColor: '#4CAF50',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          Allow Microphone Access
-        </button>
-      ) : (
-        <div>
-          <h2 style={{ fontSize: '3rem', margin: '1rem 0' }}>{currentNote || 'No note detected'}</h2>
-          <p>Frequency: {currentFrequency > 0 ? currentFrequency.toFixed(2) : '0.00'} Hz</p>
-          {isAnalyzing && (
-            <div style={{ marginTop: '1rem' }}>
-              <p style={{ 
-                fontSize: '1.2rem', 
-                color: getTuningColor(),
-                fontWeight: 'bold'
-              }}>
-                {getTuningStatus()} ({cents} cents)
-              </p>
+      <div className="tuner-container">
+        {!hasPermission ? (
+          <button 
+            onClick={requestMicrophonePermission}
+            className="mic-button"
+          >
+            Allow Microphone Access
+          </button>
+        ) : (
+          <div>
+            <div className="note-display">
+              {currentNote || 'No note detected'}
             </div>
-          )}
-          <p style={{ fontSize: '0.8rem', color: '#666', marginTop: '1rem' }}>
-            {isAnalyzing ? '🎵 Detecting audio...' : 'Play a note on your guitar to see the detected pitch'}
-          </p>
-          <div style={{ 
-            marginTop: '1rem',
-            padding: '0.5rem',
-            backgroundColor: '#f0f0f0',
-            borderRadius: '4px',
-            fontSize: '0.8rem'
-          }}>
-            <p>Debug Info:</p>
-            <p>Microphone Access: {hasPermission ? '✅ Granted' : '❌ Not granted'}</p>
-            <p>Audio Context: {audioContextRef.current ? '✅ Active' : '❌ Not active'}</p>
-            <p>Analyzer: {analyserRef.current ? '✅ Active' : '❌ Not active'}</p>
+            <div className="frequency">
+              Frequency: {currentFrequency > 0 ? currentFrequency.toFixed(2) : '0.00'} Hz
+            </div>
+            {isAnalyzing && (
+              <div className="tuning-status" style={{ color: getTuningColor() }}>
+                {getTuningStatus()} ({cents} cents)
+              </div>
+            )}
+            <div className="status-message">
+              {isAnalyzing ? '🎵 Detecting audio...' : 'Play a note on your guitar to see the detected pitch'}
+            </div>
+            <div className="debug-info">
+              <p>Microphone Access: {hasPermission ? '✅ Granted' : '❌ Not granted'}</p>
+              <p>Audio Context: {audioContextRef.current ? '✅ Active' : '❌ Not active'}</p>
+              <p>Analyzer: {analyserRef.current ? '✅ Active' : '❌ Not active'}</p>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

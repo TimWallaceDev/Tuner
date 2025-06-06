@@ -1,0 +1,92 @@
+.home-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  color: #ffffff;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 2rem;
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(0, 149, 255, 0.5);
+  }
+
+  .tuner-container {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .note-display {
+    font-size: 4rem;
+    font-weight: bold;
+    margin: 1rem 0;
+    color: #0095ff;
+    text-shadow: 0 0 15px rgba(0, 149, 255, 0.3);
+  }
+
+  .frequency {
+    font-size: 1.2rem;
+    color: #b3b3b3;
+    margin-bottom: 1rem;
+  }
+
+  .tuning-status {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 1rem 0;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .status-message {
+    font-size: 0.9rem;
+    color: #b3b3b3;
+    margin-top: 1rem;
+  }
+
+  .debug-info {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: #b3b3b3;
+
+    p {
+      margin: 0.5rem 0;
+    }
+  }
+
+  .mic-button {
+    background: linear-gradient(135deg, #0095ff 0%, #0066cc 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 149, 255, 0.3);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 149, 255, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
