@@ -1,63 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './HomePage.scss';
 import TunerDisplay from '../../Components/TunerDisplay';
-import { ARC_SEGMENTS, ARC_SPAN, YELLOW_RANGE, TUNING_THRESHOLD, MAX_POINTER_CENTS } from '../../constants/tuner';
+// import { ARC_SEGMENTS, MAX_POINTER_CENTS } from '../../constants/tuner'; // Only if used directly in HomePage JSX
+import { NOTE_FREQUENCIES, INSTRUMENTS_DATA } from '../../data/tuningData';
 
-
-
-// Standard tuning frequencies for different instruments
-const INSTRUMENT_NOTES = {
-  guitar: {
-    name: 'Guitar',
-    notes: {
-      'E2': 82.41, 'F2': 87.31, 'F#2': 92.50, 'G2': 98.00, 'G#2': 103.83, 'A2': 110.00,
-      'A#2': 116.54, 'B2': 123.47, 'C3': 130.81, 'C#3': 138.59, 'D3': 146.83, 'D#3': 155.56,
-      'E3': 164.81, 'F3': 174.61, 'F#3': 185.00, 'G3': 196.00, 'G#3': 207.65, 'A3': 220.00,
-      'A#3': 233.08, 'B3': 246.94, 'C4': 261.63, 'C#4': 277.18, 'D4': 293.66, 'D#4': 311.13,
-      'E4': 329.63, 'F4': 349.23, 'F#4': 369.99, 'G4': 392.00, 'G#4': 415.30, 'A4': 440.00,
-      'A#4': 466.16, 'B4': 493.88, 'C5': 523.25, 'C#5': 554.37, 'D5': 587.33, 'D#5': 622.25,
-      'E5': 659.25, 'F5': 698.46, 'F#5': 739.99, 'G5': 783.99, 'G#5': 830.61, 'A5': 880.00,
-      'A#5': 932.33, 'B5': 987.77, 'C6': 1046.50, 'C#6': 1108.73, 'D6': 1174.66, 'D#6': 1244.51,
-      'E6': 1318.51
-    }
-  },
-  ukulele: {
-    name: 'Ukulele',
-    notes: {
-      'G3': 196.00, 'G#3': 207.65, 'A3': 220.00, 'A#3': 233.08, 'B3': 246.94,
-      'C4': 261.63, 'C#4': 277.18, 'D4': 293.66, 'D#4': 311.13, 'E4': 329.63,
-      'F4': 349.23, 'F#4': 369.99, 'G4': 392.00, 'G#4': 415.30, 'A4': 440.00,
-      'A#4': 466.16, 'B4': 493.88, 'C5': 523.25, 'C#5': 554.37, 'D5': 587.33,
-      'D#5': 622.25, 'E5': 659.25, 'F5': 698.46, 'F#5': 739.99, 'G5': 783.99,
-      'G#5': 830.61, 'A5': 880.00, 'A#5': 932.33, 'B5': 987.77, 'C6': 1046.50
-    }
-  },
-  banjo: {
-    name: 'Banjo',
-    notes: {
-      'D3': 146.83, 'D#3': 155.56, 'E3': 164.81, 'F3': 174.61, 'F#3': 185.00,
-      'G3': 196.00, 'G#3': 207.65, 'A3': 220.00, 'A#3': 233.08, 'B3': 246.94,
-      'C4': 261.63, 'C#4': 277.18, 'D4': 293.66, 'D#4': 311.13, 'E4': 329.63,
-      'F4': 349.23, 'F#4': 369.99, 'G4': 392.00, 'G#4': 415.30, 'A4': 440.00,
-      'A#4': 466.16, 'B4': 493.88, 'C5': 523.25, 'C#5': 554.37, 'D5': 587.33,
-      'D#5': 622.25, 'E5': 659.25, 'F5': 698.46, 'F#5': 739.99, 'G5': 783.99
-    }
-  },
-  violin: {
-    name: 'Violin',
-    notes: {
-      'G3': 196.00, 'G#3': 207.65, 'A3': 220.00, 'A#3': 233.08, 'B3': 246.94,
-      'C4': 261.63, 'C#4': 277.18, 'D4': 293.66, 'D#4': 311.13, 'E4': 329.63,
-      'F4': 349.23, 'F#4': 369.99, 'G4': 392.00, 'G#4': 415.30, 'A4': 440.00,
-      'A#4': 466.16, 'B4': 493.88, 'C5': 523.25, 'C#5': 554.37, 'D5': 587.33,
-      'D#5': 622.25, 'E5': 659.25, 'F5': 698.46, 'F#5': 739.99, 'G5': 783.99,
-      'G#5': 830.61, 'A5': 880.00, 'A#5': 932.33, 'B5': 987.77, 'C6': 1046.50,
-      'C#6': 1108.73, 'D6': 1174.66, 'D#6': 1244.51, 'E6': 1318.51, 'F6': 1396.91,
-      'F#6': 1479.98, 'G6': 1567.98, 'G#6': 1661.22, 'A6': 1760.00, 'A#6': 1864.66,
-      'B6': 1975.53, 'C7': 2093.00
-    }
-  }
-};
 
 const HomePage = () => {
   const [hasPermission, setHasPermission] = useState(false);
@@ -65,49 +11,67 @@ const HomePage = () => {
   const [currentFrequency, setCurrentFrequency] = useState(0);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [cents, setCents] = useState(0);
-  const [selectedInstrument, setSelectedInstrument] = useState('guitar');
-  const [selectedTargetNote, setSelectedTargetNote] = useState('E2');
+
+  const [selectedInstrumentKey, setSelectedInstrumentKey] = useState(Object.keys(INSTRUMENTS_DATA)[0]);
+  const [selectedTuningKey, setSelectedTuningKey] = useState(INSTRUMENTS_DATA[selectedInstrumentKey].defaultTuning);
+  const [currentTargetNoteIndex, setCurrentTargetNoteIndex] = useState(0);
+
   const audioContextRef = useRef(null);
   const analyserRef = useRef(null);
   const microphoneRef = useRef(null);
   const animationFrameRef = useRef(null);
 
-  const findClosestNote = (frequency) => {
-    // If frequency is too low or high, return the closest boundary note
-    const notes = INSTRUMENT_NOTES[selectedInstrument].notes;
-    const noteValues = Object.entries(notes);
-    const lowestNote = noteValues[0][0];
-    const highestNote = noteValues[noteValues.length - 1][0];
-    
-    if (frequency < notes[lowestNote]) return lowestNote;
-    if (frequency > notes[highestNote]) return highestNote;
+  const currentInstrument = INSTRUMENTS_DATA[selectedInstrumentKey];
 
-    let closestNote = lowestNote;
-    let minDifference = Math.abs(frequency - notes[lowestNote]);
-    
-    for (const [note, noteFreq] of Object.entries(notes)) {
+  // Determine the effective tuning key for the current render.
+  // If selectedTuningKey (from state, possibly stale from a previous instrument)
+  // isn't a valid tuning for the currentInstrument, use the currentInstrument's defaultTuning.
+  // The useEffect hook for selectedInstrumentKey will correctly update the selectedTuningKey state for subsequent renders.
+  let effectiveTuningKey = selectedTuningKey;
+  if (!currentInstrument.tunings[effectiveTuningKey]) {
+    effectiveTuningKey = currentInstrument.defaultTuning;
+  }
+  const currentTuning = currentInstrument.tunings[effectiveTuningKey];
+
+  // Safely access notes and target note name, defaulting if currentTuning or notes are unexpectedly undefined.
+  const notesInCurrentTuning = currentTuning && currentTuning.notes ? currentTuning.notes : [];
+  const currentTargetNoteName = notesInCurrentTuning[currentTargetNoteIndex]; // currentTargetNoteIndex is reset to 0 by useEffects
+  const currentTargetNoteFrequency = currentTargetNoteName ? (NOTE_FREQUENCIES[currentTargetNoteName] || 0) : 0;
+
+  const findClosestNote = (frequency) => {
+    if (frequency <= 0) return '';
+    let closestNote = '';
+    let minDifference = Infinity;
+
+    // Consider a sensible range or all notes
+    // For simplicity, iterating all defined notes.
+    // You might want to refine this based on instrument context later.
+    for (const [note, noteFreq] of Object.entries(NOTE_FREQUENCIES)) {
       const difference = Math.abs(frequency - noteFreq);
       if (difference < minDifference) {
         minDifference = difference;
         closestNote = note;
       }
     }
-    
     return closestNote;
   };
 
-  const calculateCents = (frequency, targetNote) => {
-    const targetFrequency = INSTRUMENT_NOTES[selectedInstrument].notes[targetNote];
-    if (frequency <= 0 || targetFrequency <= 0) return 0;
-    return Math.round(1200 * Math.log2(frequency / targetFrequency));
+  const calculateCents = (currentFreq, targetFreq) => {
+    if (currentFreq <= 0 || targetFreq <= 0) return 0;
+    return Math.round(1200 * Math.log2(currentFreq / targetFreq));
   };
 
-  // Update target note when instrument changes
+  // Update tuning and target note when instrument changes
   useEffect(() => {
-    const notes = INSTRUMENT_NOTES[selectedInstrument].notes;
-    const firstNote = Object.keys(notes)[0];
-    setSelectedTargetNote(firstNote);
-  }, [selectedInstrument]);
+    const instrument = INSTRUMENTS_DATA[selectedInstrumentKey];
+    setSelectedTuningKey(instrument.defaultTuning);
+    setCurrentTargetNoteIndex(0); // Reset to the first note of the new default tuning
+  }, [selectedInstrumentKey]);
+
+  // Update target note index when tuning changes
+  useEffect(() => {
+    setCurrentTargetNoteIndex(0); // Reset to the first note of the new tuning
+  }, [selectedTuningKey]);
 
   const requestMicrophonePermission = async () => {
     try {
@@ -125,8 +89,8 @@ const HomePage = () => {
       // Set up audio context and analyzer
       audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
       analyserRef.current = audioContextRef.current.createAnalyser();
-      analyserRef.current.fftSize = 2048;
-      analyserRef.current.smoothingTimeConstant = 0.8;
+      analyserRef.current.fftSize = 2048; // Standard size, good balance
+      analyserRef.current.smoothingTimeConstant = 0.5; // Reduced for better responsiveness
       
       // Connect microphone to analyzer
       microphoneRef.current = audioContextRef.current.createMediaStreamSource(stream);
@@ -196,16 +160,21 @@ const HomePage = () => {
         setCurrentFrequency(frequency);
         const closestNote = findClosestNote(frequency);
         setCurrentNote(closestNote);
-        setCents(calculateCents(frequency, selectedTargetNote));
+        setCents(calculateCents(frequency, currentTargetNoteFrequency));
         setIsAnalyzing(true);
         // Debug: Log raw detected frequency and closest note
         console.log('[HomePage Debug]', {
           detectedFrequency: frequency,
           closestNote,
           currentNote: closestNote,
-          targetNote: selectedTargetNote
+          targetNote: currentTargetNoteName
         });
       } else {
+        // No valid frequency detected (too quiet or unclear)
+        // Reset cents and current note to avoid displaying stale data
+        setCurrentFrequency(0);
+        setCurrentNote('');
+        setCents(0);
         setIsAnalyzing(false);
       }
       
@@ -227,23 +196,6 @@ const HomePage = () => {
     };
   }, []);
 
-  const getTuningStatus = () => {
-    if (Math.abs(cents) < 5) return 'In Tune';
-    if (cents > 0) return 'Too High';
-    return 'Too Low';
-  };
-
-  const getTuningColor = () => {
-    if (Math.abs(cents) < 5) return '#4CAF50';
-    if (Math.abs(cents) < 20) return '#FFA500';
-    return '#FF0000';
-  };
-
-  const normalizedCents = Math.max(-MAX_POINTER_CENTS, Math.min(MAX_POINTER_CENTS, cents));
-  const segmentIndex = Math.round((normalizedCents + MAX_POINTER_CENTS) * (ARC_SEGMENTS - 1) / (2 * MAX_POINTER_CENTS));
-  const pointerIdx = Math.max(0, Math.min(ARC_SEGMENTS - 1, segmentIndex));
-
-  const showPointer = Math.abs(cents) <= MAX_POINTER_CENTS;
 
   return (
     <div className="home-page">
@@ -253,29 +205,66 @@ const HomePage = () => {
           <label htmlFor="instrument-select" style={{ fontWeight: 600, marginRight: 8 }}>Instrument:</label>
           <select
             id="instrument-select"
-            value={selectedInstrument}
-            onChange={e => setSelectedInstrument(e.target.value)}
+            value={selectedInstrumentKey}
+            onChange={e => setSelectedInstrumentKey(e.target.value)}
             style={{ fontSize: '1.1rem', padding: '0.3rem 1rem', borderRadius: 6 }}
           >
-            {Object.entries(INSTRUMENT_NOTES).map(([key, instrument]) => (
+            {Object.entries(INSTRUMENTS_DATA).map(([key, instrument]) => (
               <option key={key} value={key}>{instrument.name}</option>
             ))}
           </select>
         </div>
         <div>
-          <label htmlFor="target-note-select" style={{ fontWeight: 600, marginRight: 8 }}>Target Note:</label>
+          <label htmlFor="tuning-select" style={{ fontWeight: 600, marginRight: 8 }}>Tuning:</label>
           <select
-            id="target-note-select"
-            value={selectedTargetNote}
-            onChange={e => setSelectedTargetNote(e.target.value)}
+            id="tuning-select"
+            value={selectedTuningKey}
+            onChange={e => setSelectedTuningKey(e.target.value)}
             style={{ fontSize: '1.1rem', padding: '0.3rem 1rem', borderRadius: 6 }}
           >
-            {Object.keys(INSTRUMENT_NOTES[selectedInstrument].notes).map(note => (
-              <option key={note} value={note}>{note}</option>
+            {Object.entries(currentInstrument.tunings).map(([key, tuning]) => (
+              <option key={key} value={key}>{tuning.name}</option>
             ))}
           </select>
         </div>
       </div>
+
+      {/* Display all notes of the current tuning, split into two sides */}
+      {notesInCurrentTuning.length > 0 && (
+        <div className="tuning-notes-display" style={{ display: 'flex', justifyContent: 'space-around', margin: '1rem 0', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '8px' }}>
+          {[0, 1].map(side => {
+            const sideNotes = notesInCurrentTuning.filter((_, index) => 
+              side === 0 ? index < Math.ceil(notesInCurrentTuning.length / 2) : index >= Math.ceil(notesInCurrentTuning.length / 2)
+            );
+            const originalIndicesStart = side === 0 ? 0 : Math.ceil(notesInCurrentTuning.length / 2);
+
+            return (
+              <div key={side} className={`tuning-notes-side-${side === 0 ? 'left' : 'right'}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                {sideNotes.map((noteName, idx) => {
+                  const originalIndex = originalIndicesStart + idx;
+                  const isActive = originalIndex === currentTargetNoteIndex;
+                  return (
+                    <button
+                      key={noteName + originalIndex}
+                      onClick={() => setCurrentTargetNoteIndex(originalIndex)}
+                      style={{
+                        padding: '8px 12px', margin: '4px', fontSize: '1rem', cursor: 'pointer',
+                        border: isActive ? '2px solid #007bff' : '1px solid #ddd',
+                        backgroundColor: isActive ? '#e7f3ff' : 'white',
+                        fontWeight: isActive ? 'bold' : 'normal',
+                        borderRadius: '4px'
+                      }}
+                    >
+                      {noteName} ({NOTE_FREQUENCIES[noteName]?.toFixed(1)} Hz)
+                    </button>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       <div className="tuner-container">
         {!hasPermission ? (
           <button 
@@ -289,9 +278,10 @@ const HomePage = () => {
             note={currentNote}
             cents={cents}
             frequency={currentFrequency}
+            targetNoteName={currentTargetNoteName}
+            targetNoteFrequency={currentTargetNoteFrequency}
             isAnalyzing={isAnalyzing}
-            targetNote={selectedTargetNote}
-            instrument={INSTRUMENT_NOTES[selectedInstrument].name}
+            instrumentName={currentInstrument.name}
           />
         )}
         <div className="status-message">
