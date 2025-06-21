@@ -3,6 +3,7 @@ import './HomePage.scss';
 import TunerDisplay from '../../Components/TunerDisplay';
 // import { ARC_SEGMENTS, MAX_POINTER_CENTS } from '../../constants/tuner'; // Only if used directly in HomePage JSX
 import { NOTE_FREQUENCIES, INSTRUMENTS_DATA } from '../../data/tuningData';
+import { Headstock } from '../../Components/HeadStock';
 
 
 const HomePage = () => {
@@ -76,27 +77,27 @@ const HomePage = () => {
   const requestMicrophonePermission = async () => {
     try {
       console.log('Requesting microphone access...');
-      const stream = await navigator.mediaDevices.getUserMedia({ 
+      const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: false,
           noiseSuppression: false,
           autoGainControl: false
-        } 
+        }
       });
       console.log('Microphone access granted');
       setHasPermission(true);
-      
+
       // Set up audio context and analyzer
       audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
       analyserRef.current = audioContextRef.current.createAnalyser();
       analyserRef.current.fftSize = 2048; // Standard size, good balance
       analyserRef.current.smoothingTimeConstant = 0.5; // Reduced for better responsiveness
-      
+
       // Connect microphone to analyzer
       microphoneRef.current = audioContextRef.current.createMediaStreamSource(stream);
       microphoneRef.current.connect(analyserRef.current);
       console.log('Audio context and analyzer set up');
-      
+
       // Start frequency analysis
       startFrequencyAnalysis();
     } catch (error) {
@@ -148,13 +149,13 @@ const HomePage = () => {
   const startFrequencyAnalysis = () => {
     const analyzeFrequency = () => {
       if (!analyserRef.current) return;
-      
+
       // Use autocorrelation for pitch detection
       const bufferLength = analyserRef.current.fftSize;
       const timeDomainData = new Float32Array(bufferLength);
       analyserRef.current.getFloatTimeDomainData(timeDomainData);
       const frequency = autoCorrelate(timeDomainData, audioContextRef.current.sampleRate);
-      
+
       // Only update if we have a significant signal
       if (frequency > 0) {
         setCurrentFrequency(frequency);
@@ -177,10 +178,10 @@ const HomePage = () => {
         setCents(0);
         setIsAnalyzing(false);
       }
-      
+
       animationFrameRef.current = requestAnimationFrame(analyzeFrequency);
     };
-    
+
     analyzeFrequency();
   };
 
@@ -233,7 +234,7 @@ const HomePage = () => {
       {notesInCurrentTuning.length > 0 && (
         <div className="tuning-notes-display" style={{ display: 'flex', justifyContent: 'space-around', margin: '1rem 0', padding: '0.5rem', border: '1px solid #ccc', borderRadius: '8px' }}>
           {[0, 1].map(side => {
-            const sideNotes = notesInCurrentTuning.filter((_, index) => 
+            const sideNotes = notesInCurrentTuning.filter((_, index) =>
               side === 0 ? index < Math.ceil(notesInCurrentTuning.length / 2) : index >= Math.ceil(notesInCurrentTuning.length / 2)
             );
             const originalIndicesStart = side === 0 ? 0 : Math.ceil(notesInCurrentTuning.length / 2);
@@ -267,7 +268,7 @@ const HomePage = () => {
 
       <div className="tuner-container">
         {!hasPermission ? (
-          <button 
+          <button
             onClick={requestMicrophonePermission}
             className="mic-button"
           >
@@ -293,6 +294,8 @@ const HomePage = () => {
           <p>Analyzer: {analyserRef.current ? '✅ Active' : '❌ Not active'}</p>
         </div>
       </div>
+
+      <Headstock instrument={selectedInstrumentKey} />
     </div>
   );
 };
