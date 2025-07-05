@@ -253,8 +253,8 @@ export const INSTRUMENTS_DATA = {
       },
     },
   
-    bass_guitar: {
-      name: "Bass Guitar",
+    bass: {
+      name: "Bass",
       defaultTuning: "standard",
       tunings: {
         standard: {

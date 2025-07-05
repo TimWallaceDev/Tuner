@@ -27,7 +27,7 @@ const TunerDisplay = ({
   tuningNotes = [],
 }) => {
   const [tunedNotes, setTunedNotes] = useState(new Set());
-
+  const [showInfo, setShowInfo] = useState(false);
   const detected = useNoteDetector(frequency);
   const displayNote = detected?.note || note;
   const displayCents = detected?.cents ?? cents;
@@ -87,48 +87,36 @@ const TunerDisplay = ({
 
   const pointer = usePointerShape(frequency, displayCents);
 
-  useEffect(() => {
-    console.log("[TunerDisplay]", {
-      frequency,
-      displayNote,
-      displayCents,
-      matchedTuningNote,
-      targetNoteFrequency,
-      isInTune,
-      tunedNotes: Array.from(tunedNotes),
-    });
-  }, [
-    frequency,
-    displayNote,
-    displayCents,
-    matchedTuningNote,
-    targetNoteFrequency,
-    instrumentName,
-    tunedNotes,
-  ]);
-
   return (
     <div className="tuner-display">
       <div className="tuner-header">
-        <div className="tuner-freq">
-          {frequency ? `${frequency.toFixed(1)} Hz` : "-- Hz"}
-        </div>
-        <div className="tuner-mode">{instrumentName}</div>
-      </div>
-
+      <button
+        className="toggle-info-button"
+        onClick={() => setShowInfo((prev) => !prev)}
+        aria-label="Toggle Frequency Info"
+      >
+        <img src="src/assets/i.svg" alt="Toggle info" width={24} height={24} />
+      </button>
+      {showInfo && (
+      <div className="tuner-freq">
+      {frequency ? `${frequency.toFixed(1)} Hz` : "-- Hz"}
       <div className="tuner-expected-hz">
-        Expected:{" "}
         {targetNoteFrequency
-          ? `${targetNoteFrequency.toFixed(2)} Hz (${matchedTuningNote})`
+          ? `${targetNoteFrequency.toFixed(2)}Hz (${matchedTuningNote})`
           : "--"}
+      </div>
+      </div>
+      )}
+
+        <div className="tuner-mode">{instrumentName}</div>
       </div>
 
       <div className="headstock">
         <Headstock
-        instrument={instrumentName.toLowerCase()}
-        tuningNotes={tuningNotes}
-        tunedNotes={tunedNotes}
-        targetNoteFrequency={targetNoteFrequency}
+          instrument={instrumentName.toLowerCase()}
+          tuningNotes={tuningNotes}
+          tunedNotes={tunedNotes}
+          targetNoteFrequency={targetNoteFrequency}
         />
       </div>
 
@@ -139,7 +127,13 @@ const TunerDisplay = ({
           viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
           className="tuner-arc-svg tuner-arc-tilt"
         >
-          <circle cx={ARC_CENTER_X} cy={ARC_CENTER_Y} r="3" fill="red" display='none' />
+          <circle
+            cx={ARC_CENTER_X}
+            cy={ARC_CENTER_Y}
+            r="3"
+            fill="red"
+            display="none"
+          />
           {arcSegments.map(({ key, points, fill, opacity, className }) => (
             <polygon
               key={key}
@@ -159,24 +153,24 @@ const TunerDisplay = ({
       </div>
 
       <div className="tuner-note-row" style={{ marginTop: "-10px" }}>
-          <span className="tuner-note">{displayNote || "--"}</span>
+        <span className="tuner-note">{displayNote || "--"}</span>
       </div>
-
+{/* 
       <div className="tuner-note-row arrow-container">
-      <span
+        <span
           className="tuner-arrow left"
           style={{ opacity: displayCents < -TUNING_THRESHOLD ? 1 : 0.3 }}
         >
           ▶
         </span>
-        
+
         <span
           className="tuner-arrow right"
           style={{ opacity: displayCents > TUNING_THRESHOLD ? 1 : 0.3 }}
         >
           ◀
         </span>
-      </div>
+      </div> */}
     </div>
   );
 };

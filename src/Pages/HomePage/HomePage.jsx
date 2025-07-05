@@ -45,56 +45,47 @@ const HomePage = () => {
 
   return (
     <div className="home-page">
-      <h1>Instrument Tuner Deluxe</h1>
-
-
+      <h1>Tuner Deluxe</h1>
 
       {/* Mic permission + tuner display */}
       <div className="tuner-container">
         {!hasPermission ? (
           <>
-            <button
-              onClick={requestMicrophoneAccess}
-              className="mic-button"
-            >
+            <button onClick={requestMicrophoneAccess} className="mic-button">
               🎤 Enable Microphone
             </button>
-            <p>
-              Microphone access is needed to detect pitch.
-            </p>
+            <p>Microphone access is needed to detect pitch.</p>
           </>
         ) : (
           <>
-                {/* Instrument and tuning selector */}
-      <div className="instrument-select-container">
-        <div>
-          <label htmlFor="instrument-select">Instrument:</label>
-          <CustomDropdown
-            id="instrument-select"            
-            value={instrument}
-            onChange={setInstrument}
-            options={Object.entries(INSTRUMENTS_DATA).map(([key, inst]) => ({
-              value: key,
-              label: inst.name,
-            }))}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="tuning-select">Tuning:</label>
-          <CustomDropdown
-            id="tuning-select"            
-            value={tuningName}
-            onChange={setTuningName}
-            options={Object.entries(INSTRUMENTS_DATA[instrument].tunings).map(
-              ([key, tuning]) => ({
-                value: key,
-                label: tuning.name,
-              })
-            )}
-          />
-        </div>
-      </div>
+            {/* Instrument and tuning selector */}
+            <div className="dropdown-container">
+              
+                <CustomDropdown
+                  id="instrument-select"
+                  label="Instrument"
+                  value={instrument}
+                  onChange={setInstrument}
+                  options={Object.entries(INSTRUMENTS_DATA).map(
+                    ([key, inst]) => ({
+                      value: key,
+                      label: inst.name,
+                    })
+                  )}
+                />                            
+                <CustomDropdown
+                  id="tuning-select"
+                  label="Tuning Select"
+                  value={tuningName}
+                  onChange={setTuningName}
+                  options={Object.entries(
+                    INSTRUMENTS_DATA[instrument].tunings
+                  ).map(([key, tuning]) => ({
+                    value: key,
+                    label: tuning.name,
+                  }))}
+                />              
+            </div>
             <TunerDisplay
               tuningNotes={tuningNotes}
               note={note}
@@ -108,7 +99,6 @@ const HomePage = () => {
             <div className="status-message">
               {/* {frequency > 0 ? '🎵 Detecting audio...' : 'Waiting for signal...'} */}
             </div>
-            
           </>
         )}
       </div>

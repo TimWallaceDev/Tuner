@@ -1,8 +1,8 @@
 .tuner-display {
-  background: #181a1b;
-  border-radius: 18px;
-  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.4);
-  padding: 2rem 2.5rem 2.5rem;
+  
+  
+  
+  
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -14,6 +14,7 @@
   .tuner-header {
     width: 100%;
     display: flex;
+    flex-direction: row-reverse;
     justify-content: space-between;
     font-size: 1.1rem;
     color: #b3b3b3;

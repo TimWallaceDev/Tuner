@@ -32,12 +32,17 @@
     align-items: center;
   }
 
-  .instrument-select-container {
-    margin-Bottom: 1.5rem; 
-    display: 'flex';
-    flex-direction:column;
-    gap : 1rem;
+  .dropdown-container {
 
+    margin-Bottom: 1.5rem; 
+    display: flex;
+    flex-direction:row;
+    justify-content: center;
+    align-items: center;
+    justify-content: space-around;
+    
+    gap : 1rem;
+    width: 100%;
   }
   .custom-select {
     appearance: none;
