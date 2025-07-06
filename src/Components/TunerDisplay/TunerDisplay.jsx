@@ -29,10 +29,10 @@ const TunerDisplay = ({
   const [showInfo, setShowInfo] = useState(false);
   const NOTE_HOLD_DELAY = 250;
   const [displayNote, setDisplayNote] = useState(null);
-const candidateNoteRef = useRef(null);
+  const candidateNoteRef = useRef(null);
   const candidateStartTimeRef = useRef(null);
-
-
+  const ARC_ONLY_HEIGHT = ARC_RADIUS_OUTER;   // e.g. 140
+const ARC_ONLY_Y = ARC_CENTER_Y - ARC_RADIUS_OUTER; // e.g. 190 - 140 = 50
   // Find the closest tuning note to the current frequency
   const matchedTuningNote = useMemo(() => {
     if (!frequency || !tuningNotes.length) return null;
@@ -51,7 +51,7 @@ const candidateNoteRef = useRef(null);
     targetNoteFrequency > 0 && Math.abs(hzDifference) <= IN_TUNE_HZ_TOLERANCE;
 
   // Improve note label by falling back to matched note
-  
+
   const displayCents = cents ?? 0;
   const displayLabel = displayNote ?? "--";
   // Reset tuned notes if tuning or instrument changes
@@ -63,15 +63,15 @@ const candidateNoteRef = useRef(null);
   useEffect(() => {
     const interval = setInterval(() => {
       const now = Date.now();
-  
+
       if (!matchedTuningNote) return;
-  
+
       if (matchedTuningNote !== displayNote) {
         if (candidateNoteRef.current !== matchedTuningNote) {
           candidateNoteRef.current = matchedTuningNote;
           candidateStartTimeRef.current = now;
         }
-  
+
         const elapsed = now - candidateStartTimeRef.current;
         if (elapsed >= NOTE_HOLD_DELAY) {
           setDisplayNote(matchedTuningNote);
@@ -81,7 +81,7 @@ const candidateNoteRef = useRef(null);
         candidateStartTimeRef.current = null;
       }
     }, 150); // Check every 50ms
-  
+
     return () => clearInterval(interval);
   }, [matchedTuningNote, displayNote]);
 
@@ -151,41 +151,34 @@ const candidateNoteRef = useRef(null);
         />
       </div>
 
-      <div className="tuner-arc-container">
-        <svg
-          width={SVG_WIDTH}
-          height={SVG_HEIGHT}
-        viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
-          className="tuner-arc-svg tuner-arc-tilt"
-        >
-          <circle
-            cx={ARC_CENTER_X}
-            cy={ARC_CENTER_Y}
-            r="3"
-            fill="red"
-            display="none"
-          />
-          {arcSegments.map(({ key, points, fill, opacity, className }) => (
-            <polygon
-              key={key}
-              points={points}
-              fill={fill}
-              opacity={opacity}
-              className={className}
-            />
-          ))}
-          <polygon
-            points={pointer.points}
-            fill="#ff3b3b"
-            opacity={pointer.opacity}
-            className={`tuner-pointer ${pointer.glowing ? "pointer-glow" : ""}`}
-          />
-        </svg>
-      </div>
-
-      <div className="tuner-note-row" style={{ marginTop: "-10px" }}>
-      <span className="tuner-note">{displayLabel}</span>
-      </div>
+      
+  <div className="tuner-arc-container">
+    <svg
+      width={SVG_WIDTH}
+      height={ARC_ONLY_HEIGHT}
+      viewBox={`0 ${ARC_ONLY_Y} ${SVG_WIDTH} ${ARC_ONLY_HEIGHT}`}
+      className="tuner-arc-svg tuner-arc-tilt"
+    >
+      {arcSegments.map(({ key, points, fill, opacity, className }) => (
+        <polygon key={key} points={points} fill={fill} opacity={opacity} className={className} />
+      ))}
+      <polygon
+        points={pointer.points}
+        fill="#ff3b3b"
+        opacity={pointer.opacity}
+        className={`tuner-pointer ${pointer.glowing ? "pointer-glow" : ""}`}
+      />
+      <text
+        x={ARC_CENTER_X}
+        y={ARC_ONLY_HEIGHT + 10}
+        textAnchor="middle"
+        dominantBaseline="middle"
+        className="arc-center-note"
+      >
+        {displayLabel}
+      </text>
+    </svg>
+</div>
     </div>
   );
 };

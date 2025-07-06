@@ -21,7 +21,8 @@
     cursor: pointer;
     user-select: none;
     transition: border 0.2s ease;
-
+    width: auto;
+    
   }
   
   .dropdown-box:hover {
@@ -71,5 +72,6 @@
   }
 
   .label {
-    color: var(--color-white);     
+    color: var(--color-white);   
+    display: none;  
   }
