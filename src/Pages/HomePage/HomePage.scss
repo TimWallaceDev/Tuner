@@ -9,23 +9,26 @@
   align-items: center;
   justify-content: center;
 
-  h1 {
-    font-size: 3rem;
-    margin-bottom: 2rem;
-    margin-top: 2rem;
+  .title-container {
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem;
+    
+  }
+
+  .title {
     color: #ffffff;
     text-shadow: 0 0 10px rgba(0, 149, 255, 0.5);
   }
 
   .tuner-container {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
+ 
     padding: 2rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    width: 100%;
-    max-width: 600px;
+  
+    width: 90%;
+    
     margin: 0 auto;
     display: flex;
     flex-direction: column;

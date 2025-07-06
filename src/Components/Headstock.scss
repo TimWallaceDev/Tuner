@@ -1,5 +1,5 @@
 .max-w-full {
-   height: 20rem;
+   height: 15rem;
     padding: 0rem;
    margin: 0rem;
    
@@ -17,3 +17,11 @@
 .peg-note {
     fill: white;
 }
+
+svg {
+    width: 100%;
+    height: auto;
+    max-width: 90vw;
+    display: block;
+  }
+  

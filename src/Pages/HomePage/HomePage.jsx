@@ -45,7 +45,10 @@ const HomePage = () => {
 
   return (
     <div className="home-page">
-      <h1>Tuner Deluxe</h1>
+      <div className="title-container">
+      <h1 className="title">Tuner Deluxe</h1>
+      </div>
+      
 
       {/* Mic permission + tuner display */}
       <div className="tuner-container">

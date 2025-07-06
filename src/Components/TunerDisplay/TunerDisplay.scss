@@ -4,17 +4,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 340px;
-  max-width: 370px;
+  
+  
   padding: 0rem;
   user-select: none;
 
   .tuner-header {
-    padding-top: 1rem;
+    
     width: 100%;
     display: flex;
     flex-direction: row-reverse;
-    
+    max-width: 80vw;
     justify-content: space-between;
     font-size: 1.1rem;
     color: #b3b3b3;    
@@ -22,11 +22,12 @@
     
 
     .tuner-freq {
-      font-weight: 600;
+      font-weight: 400;
       color: #ffffff;
       text-shadow: 0 0 6px rgba(0, 149, 255, 0.27);
       padding: 1rem;
       max-height: 2rem;
+      font-size: .75rem;
     }
 
     .tuner-mode {
@@ -38,15 +39,15 @@
 
   .tuner-expected-hz {
     color: #888;
-    font-size: 0.95rem;
-    margin-bottom: 1.25rem;
+    font-size: .75rem;
+    
     text-align: center;
   }
 
   .tuner-arc-container {
-    width: 320px;
-    height: 90px;
-    margin-bottom: 2.5rem;
+    
+    
+    
     position: relative;
 
     .tuner-arc {

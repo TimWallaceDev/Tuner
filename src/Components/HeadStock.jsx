@@ -53,7 +53,7 @@ export function Headstock({ instrument, tuningNotes = [], targetNoteFrequency = 
           clearTimeout(timerRef.current);
           currentNoteRef.current = null;
         }
-      }, 100);
+      }, 1000);
     }
 
     return () => {
@@ -163,7 +163,7 @@ export function Headstock({ instrument, tuningNotes = [], targetNoteFrequency = 
   }
 
   return (
-    <svg {...layout.svgProps} className="max-w-full h-auto">
+    <svg {...layout.svgProps} className="max-w-full h-auto" preserveAspectRatio='xMidYMid meet'>
       {/* Headstock body */}
       <path
         style={{ fill: 'transparent', stroke: '#000', strokeWidth: 2 }}

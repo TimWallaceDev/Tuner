@@ -155,7 +155,7 @@ const candidateNoteRef = useRef(null);
         <svg
           width={SVG_WIDTH}
           height={SVG_HEIGHT}
-          viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
+        viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
           className="tuner-arc-svg tuner-arc-tilt"
         >
           <circle
