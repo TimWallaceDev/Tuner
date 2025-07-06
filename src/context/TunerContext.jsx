@@ -1,167 +1,164 @@
 import React, {
-    createContext,
-    useContext,
-    useState,
-    useMemo,
-    useEffect,
-    useRef,
-  } from 'react';
-  import { INSTRUMENTS_DATA } from '../constants/tuningData';
-  import { useNoteDetector } from '../hooks/useNoteDetector';
-  
-  const TunerContext = createContext();
-  
-  export function TunerProvider({ children }) {
-    const [instrument, setInstrument] = useState('guitar');
-    const [tuningName, setTuningName] = useState(INSTRUMENTS_DATA['guitar'].defaultTuning);
-  
-    const {
-      frequency: detectedFrequency,
-      note: detectedNote,
-      cents: detectedCents,
-    } = useNoteDetector() || {};
-  
-    const [smoothedFrequency, setSmoothedFrequency] = useState(0);
-    const [smoothedNote, setSmoothedNote] = useState(null);
-    const [smoothedCents, setSmoothedCents] = useState(0);
-  
-    const lastDetectionTimeRef = useRef(0);
-    const stableNoteRef = useRef(null);
-    const noteChangeTimeoutRef = useRef(null);
-  
-    const lastValidFrequencyRef = useRef(0);
-    const lastValidNoteRef = useRef(null);
-    const lastValidCentsRef = useRef(0);
-  
-    const candidateNoteRef = useRef(null);
-    const candidateNoteStartRef = useRef(null);
-  
-    const SMOOTHING_ALPHA = 0.25;
-    const NOTE_HOLD_DELAY = 250;
-    const MAX_SILENCE_MS = 1000;
-    const NOTE_CHANGE_MIN_HZ_DIFF = 2.5; // require meaningful jump in Hz to change note
-  
-    useEffect(() => {
-      const isValid =
-        detectedFrequency > 20 &&
-        detectedFrequency < 2000 &&
-        detectedNote != null;
-  
-      if (isValid) {
-        const now = Date.now();
-        lastDetectionTimeRef.current = now;
-  
-        // Update valid history
-        lastValidFrequencyRef.current = detectedFrequency;
-        lastValidNoteRef.current = detectedNote;
-        lastValidCentsRef.current = detectedCents;
-  
-        // Smooth frequency & cents
-        setSmoothedFrequency(prev =>
-          SMOOTHING_ALPHA * detectedFrequency + (1 - SMOOTHING_ALPHA) * prev
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+  useEffect,
+  useRef,
+} from 'react';
+import { INSTRUMENTS_DATA } from '../constants/tuningData';
+import { useNoteDetector } from '../hooks/useNoteDetector';
+
+const TunerContext = createContext();
+
+export function TunerProvider({ children }) {
+  // ─── Instrument & Tuning ───────────────────────────────────────────────
+  const [instrument, setInstrument] = useState('guitar');
+  const [tuningName, setTuningName] = useState(
+    INSTRUMENTS_DATA['guitar'].defaultTuning
+  );
+
+  // ─── Raw Detection ──────────────────────────────────────────────────────
+  const {
+    frequency: rawFrequency,
+    note: rawNote,
+    cents: rawCents,
+  } = useNoteDetector() || {};
+
+  // ─── Smoothing & Stability ─────────────────────────────────────────────
+  const SMOOTHING_ALPHA = 0.25;          // smoothing factor
+  const NOTE_HOLD_DELAY = 250;          // ms to hold new note before switching
+  const MAX_SILENCE_MS   = 800;          // ms of silence before fallback
+  const MIN_HZ_CHANGE    = 2.5;          // require this Hz jump to start a note change
+
+  // Buffers & refs for smoothing & fallback
+  const bufferRef         = useRef([]);  // rolling window of rawFrequency
+  const lastDetectRef     = useRef(Date.now());
+  const lastValidFreqRef  = useRef(0);
+  const lastValidCentsRef = useRef(0);
+  const lastValidNoteRef  = useRef(null);
+
+  // Candidate logic
+  const stableNoteRef         = useRef(null);
+  const candidateNoteRef      = useRef(null);
+  const candidateStartRef     = useRef(0);
+
+  // Exposed state
+  const [frequency, setFrequency] = useState(0);
+  const [note,      setNote     ] = useState(null);
+  const [cents,     setCents    ] = useState(0);
+
+  // ─── When raw detection comes in ────────────────────────────────────────
+  useEffect(() => {
+    if (rawFrequency > 20 && rawFrequency < 5000 && rawNote) {
+      const now = Date.now();
+      lastDetectRef.current = now;
+
+      // keep history for fallback
+      lastValidFreqRef.current  = rawFrequency;
+      lastValidCentsRef.current = rawCents;
+      lastValidNoteRef.current  = rawNote;
+
+      // smoothing rolling buffer
+      const buf = bufferRef.current;
+      buf.push(rawFrequency);
+      if (buf.length > 6) buf.shift();
+      const avgFreq = buf.reduce((a, b) => a + b, 0) / buf.length;
+
+      // update smoothed frequency & cents
+      setFrequency(prev =>
+        SMOOTHING_ALPHA * avgFreq + (1 - SMOOTHING_ALPHA) * prev
+      );
+      setCents(prev =>
+        SMOOTHING_ALPHA * rawCents + (1 - SMOOTHING_ALPHA) * prev
+      );
+
+      // decide if note change candidate
+      const current = stableNoteRef.current;
+      const hzJump = Math.abs(rawFrequency - frequency);
+      if (rawNote !== current && hzJump > MIN_HZ_CHANGE) {
+        // new candidate
+        if (candidateNoteRef.current !== rawNote) {
+          candidateNoteRef.current  = rawNote;
+          candidateStartRef.current = now;
+        }
+        // held long enough?
+        if (now - candidateStartRef.current > NOTE_HOLD_DELAY) {
+          stableNoteRef.current = rawNote;
+          setNote(rawNote);
+        }
+      } else {
+        // same note or not enough jump: reset candidate
+        candidateNoteRef.current  = null;
+        candidateStartRef.current = 0;
+      }
+    }
+  }, [rawFrequency, rawNote, rawCents, frequency]);
+
+  // ─── Fallback when silent ──────────────────────────────────────────────
+  useEffect(() => {
+    let raf;
+    const tick = () => {
+      const now = Date.now();
+      if (now - lastDetectRef.current > MAX_SILENCE_MS) {
+        // fade frequency towards last valid
+        setFrequency(prev =>
+          SMOOTHING_ALPHA * lastValidFreqRef.current + (1 - SMOOTHING_ALPHA) * prev
         );
-  
-        setSmoothedCents(prev =>
-          SMOOTHING_ALPHA * detectedCents + (1 - SMOOTHING_ALPHA) * prev
+        // fade cents similarly
+        setCents(prev =>
+          SMOOTHING_ALPHA * lastValidCentsRef.current + (1 - SMOOTHING_ALPHA) * prev
         );
-  
-        const currentNote = stableNoteRef.current;
-  
-        const noteChanged = detectedNote !== currentNote;
-        const freqDiff = Math.abs(detectedFrequency - smoothedFrequency);
-  
-        // If we're hearing a different note and it seems stable
-        if (noteChanged && freqDiff > NOTE_CHANGE_MIN_HZ_DIFF) {
-          if (candidateNoteRef.current !== detectedNote) {
-            candidateNoteRef.current = detectedNote;
-            candidateNoteStartRef.current = now;
-          }
-  
-          const heldDuration = now - candidateNoteStartRef.current;
-  
-          if (heldDuration > NOTE_HOLD_DELAY) {
-            stableNoteRef.current = detectedNote;
-            setSmoothedNote(detectedNote);
-          }
-        } else {
-          // Same note as current, reset candidate
-          candidateNoteRef.current = null;
-          candidateNoteStartRef.current = null;
+        // if note drifted, snap back
+        if (stableNoteRef.current !== lastValidNoteRef.current) {
+          stableNoteRef.current = lastValidNoteRef.current;
+          setNote(lastValidNoteRef.current);
         }
       }
-    }, [detectedFrequency, detectedNote, detectedCents]);
-  
-    // Fallback: hold last good data during silence
-    useEffect(() => {
-      let frameId;
-  
-      const tick = () => {
-        const now = Date.now();
-        const timeSinceLastDetection = now - lastDetectionTimeRef.current;
-  
-        if (timeSinceLastDetection > MAX_SILENCE_MS) {
-          const fallbackFreq = lastValidFrequencyRef.current;
-          const fallbackCents = lastValidCentsRef.current;
-          const fallbackNote = lastValidNoteRef.current;
-  
-          setSmoothedFrequency(prev =>
-            SMOOTHING_ALPHA * fallbackFreq + (1 - SMOOTHING_ALPHA) * prev
-          );
-  
-          setSmoothedCents(prev =>
-            SMOOTHING_ALPHA * fallbackCents + (1 - SMOOTHING_ALPHA) * prev
-          );
-  
-          if (stableNoteRef.current !== fallbackNote) {
-            stableNoteRef.current = fallbackNote;
-            setSmoothedNote(fallbackNote);
-          }
-        }
-  
-        frameId = requestAnimationFrame(tick);
-      };
-  
-      frameId = requestAnimationFrame(tick);
-      return () => cancelAnimationFrame(frameId);
-    }, []);
-  
-    useEffect(() => {
-      setTuningName(INSTRUMENTS_DATA[instrument].defaultTuning);
-    }, [instrument]);
-  
-    const currentInstrument = INSTRUMENTS_DATA[instrument];
-    const currentTuning = currentInstrument?.tunings?.[tuningName];
-    const tuningNotes = currentTuning?.notes || [];
-  
-    const contextValue = useMemo(() => ({
-      instrument,
-      setInstrument,
-      tuningName,
-      setTuningName,
-      tuningNotes,
-      frequency: smoothedFrequency,
-      note: smoothedNote,
-      cents: smoothedCents,
-    }), [
-      instrument,
-      tuningName,
-      tuningNotes,
-      smoothedFrequency,
-      smoothedNote,
-      smoothedCents,
-    ]);
-  
-    return (
-      <TunerContext.Provider value={contextValue}>
-        {children}
-      </TunerContext.Provider>
-    );
-  }
-  
-  export function useTuner() {
-    const context = useContext(TunerContext);
-    if (!context) {
-      throw new Error("useTuner must be used within a TunerProvider");
-    }
-    return context;
-  }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  // ─── Reset tuning on instrument change ─────────────────────────────────
+  useEffect(() => {
+    setTuningName(INSTRUMENTS_DATA[instrument].defaultTuning);
+  }, [instrument]);
+
+  // ─── Build context value ───────────────────────────────────────────────
+  const tuningNotes = useMemo(() => {
+    const inst = INSTRUMENTS_DATA[instrument];
+    return (inst.tunings[tuningName]?.notes || []);
+  }, [instrument, tuningName]);
+
+  const value = useMemo(() => ({
+    instrument,
+    setInstrument,
+    tuningName,
+    setTuningName,
+    tuningNotes,
+    frequency,
+    note,
+    cents,
+  }), [
+    instrument,
+    tuningName,
+    tuningNotes,
+    frequency,
+    note,
+    cents,
+  ]);
+
+  return (
+    <TunerContext.Provider value={value}>
+      {children}
+    </TunerContext.Provider>
+  );
+}
+
+export function useTuner() {
+  const ctx = useContext(TunerContext);
+  if (!ctx) throw new Error("useTuner must be used within TunerProvider");
+  return ctx;
+}
