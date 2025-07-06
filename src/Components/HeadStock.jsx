@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { NOTE_FREQUENCIES } from '../constants/tuningData';
+import { IN_TUNE_HZ_TOLERANCE,  } from '../constants/tuner';  
 import '../Components/HeadStock.scss'
 export function Headstock({ instrument, tuningNotes = [], targetNoteFrequency = 0 }) {
   const [lockedNotes, setLockedNotes] = useState(new Set());
   const currentNoteRef = useRef(null);
+  const currentFreqRef = useRef(0);
   const timerRef = useRef(null);
-
+  const intervalRef = useRef(null);
   const currentNote = useMemo(() => {
     if (!targetNoteFrequency) return null;
     return tuningNotes.find((note) => NOTE_FREQUENCIES[note] === targetNoteFrequency) || null;
@@ -18,27 +20,48 @@ export function Headstock({ instrument, tuningNotes = [], targetNoteFrequency = 
   }, [instrument, tuningNotes]);
   // Timer logic for 1s sustained match
   useEffect(() => {
-    if (!currentNote) {
-      clearTimeout(timerRef.current);
-      currentNoteRef.current = null;
-      return;
-    }
+    if (!currentNote || lockedNotes.has(currentNote)) return;
 
-    if (lockedNotes.has(currentNote)) return;
+    const expectedFreq = NOTE_FREQUENCIES[currentNote];
+    const now = Date.now();
 
+    // Start monitoring this note
     if (currentNoteRef.current !== currentNote) {
       clearTimeout(timerRef.current);
+      clearInterval(intervalRef.current);
       currentNoteRef.current = currentNote;
+      currentFreqRef.current = targetNoteFrequency;
 
-      // Start 2s timer
-      timerRef.current = setTimeout(() => {
-        setLockedNotes((prev) => new Set(prev).add(currentNote));
-        currentNoteRef.current = null;
-      }, 4000);
+      let elapsed = 0;
+      const start = now;
+
+      intervalRef.current = setInterval(() => {
+        const diff = Math.abs(targetNoteFrequency - expectedFreq);
+        const stable = diff <= IN_TUNE_HZ_TOLERANCE;
+
+        if (!stable) {
+          clearInterval(intervalRef.current);
+          clearTimeout(timerRef.current);
+          currentNoteRef.current = null;
+          return;
+        }
+
+        elapsed = Date.now() - start;
+        if (elapsed >= 2000) {
+          setLockedNotes((prev) => new Set(prev).add(currentNote));
+          clearInterval(intervalRef.current);
+          clearTimeout(timerRef.current);
+          currentNoteRef.current = null;
+        }
+      }, 100);
     }
 
-    return () => clearTimeout(timerRef.current);
-  }, [currentNote, lockedNotes]);
+    return () => {
+      clearInterval(intervalRef.current);
+      clearTimeout(timerRef.current);
+    };
+  }, [currentNote, targetNoteFrequency, lockedNotes]);
+  
 
   const isLocked = (note) => lockedNotes.has(note);
 
@@ -60,6 +83,17 @@ export function Headstock({ instrument, tuningNotes = [], targetNoteFrequency = 
         { cx: 153, cy: 91.49 },
         { cx: 149.78, cy: 125.4 },
         { cx: 153, cy: 159.61 },
+      ],
+    },
+
+    bass: {
+      svgProps: { width: '400', height: '500', viewBox: '35 35 140 170' },
+      pathD: 'M 64.9,196 C 71.4,145 71.1,108 59.2,59 C 92.3,36 121.3,38 147.3,60 C 136.7,115 134.9,147 141.4,196 Z',
+      pegs: [
+        { cx: 53, cy: 90 },
+        { cx: 56, cy: 120 },
+        { cx: 153, cy: 90 },
+        { cx: 153, cy: 120 },
       ],
     },
   
@@ -108,16 +142,7 @@ export function Headstock({ instrument, tuningNotes = [], targetNoteFrequency = 
       ],
     },
   
-    bass: {
-      svgProps: { width: '400', height: '500', viewBox: '35 35 140 170' },
-      pathD: 'M 64.9,196 C 71.4,145 71.1,108 59.2,59 C 92.3,36 121.3,38 147.3,60 C 136.7,115 134.9,147 141.4,196 Z',
-      pegs: [
-        { cx: 53, cy: 90 },
-        { cx: 56, cy: 120 },
-        { cx: 153, cy: 90 },
-        { cx: 153, cy: 120 },
-      ],
-    },
+
   
     cello: {
       svgProps: { width: '400', height: '500', viewBox: '35 35 140 180' },

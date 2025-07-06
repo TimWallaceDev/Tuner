@@ -222,6 +222,28 @@ export const INSTRUMENTS_DATA = {
       },
     },
   },
+  bass: {
+    name: "Bass",
+    defaultTuning: "standard",
+    tunings: {
+      standard: {
+        name: "Standard (EADG)",
+        notes: ["E1", "A1", "D2", "G2"],
+      },
+      drop_d: {
+        name: "Drop D",
+        notes: ["D1", "A1", "D2", "G2"],
+      },
+      five_string: {
+        name: "5-String Standard",
+        notes: ["B0", "E1", "A1", "D2", "G2"],
+      },
+      six_string: {
+        name: "6-String Standard",
+        notes: ["B0", "E1", "A1", "D2", "G2", "C3"],
+      },
+    },
+  },
 
     cello: {
       name: "Cello",
@@ -253,27 +275,6 @@ export const INSTRUMENTS_DATA = {
       },
     },
   
-    bass: {
-      name: "Bass",
-      defaultTuning: "standard",
-      tunings: {
-        standard: {
-          name: "Standard (EADG)",
-          notes: ["E1", "A1", "D2", "G2"],
-        },
-        drop_d: {
-          name: "Drop D",
-          notes: ["D1", "A1", "D2", "G2"],
-        },
-        five_string: {
-          name: "5-String Standard",
-          notes: ["B0", "E1", "A1", "D2", "G2"],
-        },
-        six_string: {
-          name: "6-String Standard",
-          notes: ["B0", "E1", "A1", "D2", "G2", "C3"],
-        },
-      },
-    },
+
   };
 

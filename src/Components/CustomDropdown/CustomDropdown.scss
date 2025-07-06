@@ -52,7 +52,8 @@
   
   .option:hover {
     // background-color: var(--color-surface);
-    background-color: red;
+    background-color: var(--color-border);
+    color: var(--color-black);
   }
   
   .selected-option {

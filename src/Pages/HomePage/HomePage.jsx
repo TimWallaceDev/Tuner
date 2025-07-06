@@ -54,11 +54,11 @@ const HomePage = () => {
             <button onClick={requestMicrophoneAccess} className="mic-button">
               🎤 Enable Microphone
             </button>
-            <p>Microphone access is needed to detect pitch.</p>
+            <p className="mic-info">Microphone access is needed to detect pitch.</p>
           </>
         ) : (
           <>
-            {/* Instrument and tuning selector */}
+            
             <div className="dropdown-container">
               
                 <CustomDropdown
@@ -96,9 +96,6 @@ const HomePage = () => {
               isAnalyzing={frequency > 0}
               instrumentName={INSTRUMENTS_DATA[instrument].name}
             />
-            <div className="status-message">
-              {/* {frequency > 0 ? '🎵 Detecting audio...' : 'Waiting for signal...'} */}
-            </div>
           </>
         )}
       </div>

@@ -1,9 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
 import "./TunerDisplay.scss";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { Headstock } from "../HeadStock";
 import { useArcSegments } from "../../hooks/useArcSegments";
 import { usePointerShape } from "../../hooks/usePointerShape";
-import { useNoteDetector } from "../../hooks/useNoteDetector";
 import { NOTE_FREQUENCIES } from "../../constants/tuningData";
 import {
   ARC_SEGMENTS,
@@ -28,10 +27,13 @@ const TunerDisplay = ({
 }) => {
   const [tunedNotes, setTunedNotes] = useState(new Set());
   const [showInfo, setShowInfo] = useState(false);
-  const detected = useNoteDetector(frequency);
-  const displayNote = detected?.note || note;
-  const displayCents = detected?.cents ?? cents;
+  const NOTE_HOLD_DELAY = 250;
+  const [displayNote, setDisplayNote] = useState(null);
+const candidateNoteRef = useRef(null);
+  const candidateStartTimeRef = useRef(null);
 
+
+  // Find the closest tuning note to the current frequency
   const matchedTuningNote = useMemo(() => {
     if (!frequency || !tuningNotes.length) return null;
     return tuningNotes.reduce((closest, currNote) => {
@@ -48,16 +50,40 @@ const TunerDisplay = ({
   const isInTune =
     targetNoteFrequency > 0 && Math.abs(hzDifference) <= IN_TUNE_HZ_TOLERANCE;
 
-  // Update tuned notes when in tune
+  // Improve note label by falling back to matched note
+  
+  const displayCents = cents ?? 0;
+  const displayLabel = displayNote ?? "--";
+  // Reset tuned notes if tuning or instrument changes
   useEffect(() => {
-    if (isInTune && matchedTuningNote) {
-      setTunedNotes((prev) => {
-        const updated = new Set(prev);
-        updated.add(matchedTuningNote);
-        return updated;
-      });
-    }
-  }, [isInTune, matchedTuningNote]);
+    setTunedNotes(new Set());
+  }, [tuningNotes.join(","), instrumentName]);
+
+  // Mark note as tuned if it is in tune
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = Date.now();
+  
+      if (!matchedTuningNote) return;
+  
+      if (matchedTuningNote !== displayNote) {
+        if (candidateNoteRef.current !== matchedTuningNote) {
+          candidateNoteRef.current = matchedTuningNote;
+          candidateStartTimeRef.current = now;
+        }
+  
+        const elapsed = now - candidateStartTimeRef.current;
+        if (elapsed >= NOTE_HOLD_DELAY) {
+          setDisplayNote(matchedTuningNote);
+        }
+      } else {
+        candidateNoteRef.current = null;
+        candidateStartTimeRef.current = null;
+      }
+    }, 150); // Check every 50ms
+  
+    return () => clearInterval(interval);
+  }, [matchedTuningNote, displayNote]);
 
   const centerIdx = Math.floor(ARC_SEGMENTS / 2);
   const activeSegmentIdx = (() => {
@@ -90,25 +116,30 @@ const TunerDisplay = ({
   return (
     <div className="tuner-display">
       <div className="tuner-header">
-      <button
-        className="toggle-info-button"
-        onClick={() => setShowInfo((prev) => !prev)}
-        aria-label="Toggle Frequency Info"
-      >
-        <img src="src/assets/i.svg" alt="Toggle info" width={24} height={24} />
-      </button>
-      {showInfo && (
-      <div className="tuner-freq">
-      {frequency ? `${frequency.toFixed(1)} Hz` : "-- Hz"}
-      <div className="tuner-expected-hz">
-        {targetNoteFrequency
-          ? `${targetNoteFrequency.toFixed(2)}Hz (${matchedTuningNote})`
-          : "--"}
-      </div>
-      </div>
-      )}
+        <button
+          className="toggle-info-button"
+          onClick={() => setShowInfo((prev) => !prev)}
+          aria-label="Toggle Frequency Info"
+        >
+          <img
+            className="toggle-info-button__icon"
+            src="src/assets/i.svg"
+            alt="Toggle info"
+            width={24}
+            height={24}
+          />
+        </button>
 
-        <div className="tuner-mode">{instrumentName}</div>
+        {showInfo && (
+          <div className="tuner-freq">
+            {frequency ? `${frequency.toFixed(1)} Hz` : "-- Hz"}
+            <div className="tuner-expected-hz">
+              {targetNoteFrequency
+                ? `${targetNoteFrequency.toFixed(2)}Hz (${matchedTuningNote})`
+                : "--"}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="headstock">
@@ -153,24 +184,8 @@ const TunerDisplay = ({
       </div>
 
       <div className="tuner-note-row" style={{ marginTop: "-10px" }}>
-        <span className="tuner-note">{displayNote || "--"}</span>
+      <span className="tuner-note">{displayLabel}</span>
       </div>
-{/* 
-      <div className="tuner-note-row arrow-container">
-        <span
-          className="tuner-arrow left"
-          style={{ opacity: displayCents < -TUNING_THRESHOLD ? 1 : 0.3 }}
-        >
-          ▶
-        </span>
-
-        <span
-          className="tuner-arrow right"
-          style={{ opacity: displayCents > TUNING_THRESHOLD ? 1 : 0.3 }}
-        >
-          ◀
-        </span>
-      </div> */}
     </div>
   );
 };
