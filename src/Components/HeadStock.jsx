@@ -178,7 +178,7 @@ export function Headstock({ instrument, tuningNotes = [], targetNoteFrequency = 
 
         return (
           <g key={note}>
-            <ellipse
+            <ellipse className='peg'
               id={`peg-${i + 1}`}
               style={{
                 fill: isGreen ? '#10B981' : isActive ? '#a7f3d0' : 'transparent',
@@ -195,9 +195,11 @@ export function Headstock({ instrument, tuningNotes = [], targetNoteFrequency = 
               x={peg.cx}
               y={peg.cy + 20}
               textAnchor="middle"
-              style={{ fontSize: '10px', fill: '#000' }}
+              style={{ fontSize: '10px',  }}
+              className='peg-note'
             >
               {note}
+              
             </text>
           </g>
         );
