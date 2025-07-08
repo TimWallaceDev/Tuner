@@ -1,0 +1,180 @@
+
+
+// -------------------------------------------------------------
+// 1. BREAKPOINTS
+// -------------------------------------------------------------
+$mobile-breakpoint: 767px;
+$tablet-breakpoint: 768px;
+$desktop-breakpoint: 1024px; // Changed from 1280px for consistency
+
+// -------------------------------------------------------------
+// 2. FONT STACKS & TYPOGRAPHY
+// -------------------------------------------------------------
+$font-heading: 'Italiana', serif;
+$font-body: 'Poppins', sans-serif;
+
+$font-weight-light: 300;
+$font-weight-regular: 400;
+$font-weight-bold: 700;
+
+$page-header-size: 2.0625rem;
+$page-header-size-mobile: 1.5rem;
+
+$section-header-size: 0.75rem;
+$section-header-size-mobile: 0.75rem;
+
+$sub-header-size: 0.875rem;
+$sub-header-size-mobile: 0.8125rem;
+
+$body-footer-size: 0.875rem;
+$body-footer-size-mobile: 0.8125rem;
+
+$label-button-size: 0.75rem;
+$label-button-size-mobile: 0.625rem;
+
+// -------------------------------------------------------------
+// 3. LINE HEIGHTS
+// -------------------------------------------------------------
+$page-header-height: 2.75rem;
+$page-header-height-mobile: 2rem;
+
+$section-header-height: 1.25rem;
+$sub-header-height: 1.375rem;
+$body-copy-height: 1.375rem;
+$footer-label-button-height: 1.25rem;
+
+$section-header-height-mobile: 1.25rem;
+$sub-header-height-mobile: 1.125rem;
+$body-copy-height-mobile: 1.125rem;
+$footer-label-button-height-mobile: 1.125rem;
+
+// -------------------------------------------------------------
+// 5. SPACING & UNITS
+// -------------------------------------------------------------
+$unit-1: 0.25rem;
+$unit-2: 0.5rem;
+$unit-3: 1rem;
+$unit-4: 1.5rem;
+$unit-5: 2rem;
+$unit-6: 2.5rem;
+$unit-7: 3rem;
+$unit-8: 3.5rem;
+$unit-9: 4rem;
+$unit-10: 4.5rem;
+
+// -------------------------------------------------------------
+// 6. BUTTONS
+// -------------------------------------------------------------
+$button-height: 2.5rem;
+$button-min-width-tablet: 9.375rem;
+$button-min-padding-tablet: 2rem;
+$button-border-radius: 0.25rem;
+
+// -------------------------------------------------------------
+// 7. LOGO
+// -------------------------------------------------------------
+$logo-max-height: 1.5625rem;
+$logo-max-width: 7.5rem;
+
+// -------------------------------------------------------------
+// 8. FORM FIELDS
+// -------------------------------------------------------------
+$min-form-field-height-tablet: 2.5rem;
+$min-form-field-height-mobile: 2.25rem;
+$min-form-field-width: 15rem;
+$form-field-border-radius: 0.25rem;
+$form-field-padding-tablet: 1rem;
+$form-field-padding-mobile: 0.75rem;
+$form-field-top-margin: 0.25rem;
+
+// -------------------------------------------------------------
+// 10. LAYOUT
+// -------------------------------------------------------------
+$nav-height: 80px;
+$footer-height: 150px;
+$container-max-width: 800px;
+
+// -------------------------------------------------------------
+// 11. BORDERS & SHADOWS
+// -------------------------------------------------------------
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$box-shadow-light: 0 2px 4px rgba(0, 0, 0, 0.05);
+$box-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+
+// -------------------------------------------------------------
+// 13. THEMEABLE CSS CUSTOM PROPERTIES
+// -------------------------------------------------------------
+
+:root {
+
+    --color-primary: #FFFFFF;             // Inverse of $primary-dark
+    --color-secondary: #FAFAFA;           // Inverse of $secondary-dark
+    --color-success: #28a745;             // Same green (neutral enough)
+    --color-error: #D22D2D;
+    --color-accent: #f8eac6;              // Soft highlight for dark UI
+  
+    --color-background: #000000;          // True black
+    --color-surface: #323232;             // Inverted surface tone
+  
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #AFAFAF;
+    --color-border: #E1E1E1;              // $secondary-mid, inverted from primary-mid
+  
+    --color-link: #ffffff;
+    --color-link-hover: #FAFAFA;
+  
+    --color-overlay: rgba(255, 255, 255, 0.1);
+    --color-error-background: #4b0000;
+  
+    --color-white: #ffffff;
+    --color-black: #000000;
+  
+    --nav-gradient: linear-gradient(
+      270deg,
+      var(--color-primary),
+      var(--color-secondary)
+    );
+  
+    .nav__icon {
+      filter: invert(1);
+      transition: filter 0.3s ease;
+    }
+  }
+  
+  [data-theme='dark'] {
+       /* Color roles */
+       --color-primary: #323232;             // $primary-dark
+       --color-secondary: #000000;           // $secondary-dark
+       --color-success: #28a745;             // $primary-green
+       --color-error: #D22D2D;               // $form-field-error
+       --color-accent: #d55e15;              // optional highlight (orange)
+     
+       /* Backgrounds and surfaces */
+       --color-background: #FFFFFF;          // $primary-light
+       --color-surface: #FAFAFA;             // $secondary-light
+     
+       /* Text and borders */
+       --color-text-primary: #000000;
+       --color-text-secondary: #323232;
+       --color-border: #AFAFAF;              // $primary-mid
+     
+       /* Links */
+       --color-link: #323232;
+       --color-link-hover: #000000;
+     
+       /* Utility & feedback */
+       --color-overlay: rgba(0, 0, 0, 0.8);
+       --color-error-background: #f8d7da;
+     
+
+       --color-white: #000000;               // literal inversion
+    --color-black: #ffffff;
+     
+       --nav-gradient: linear-gradient(
+         270deg,
+         var(--color-primary),
+         var(--color-secondary)
+       );
+  }

@@ -1,0 +1,197 @@
+@use "../../styles/partials/variables" as *;
+
+.tuner-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 0rem;
+  user-select: none;
+
+  .tuner-header {
+    width: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+    max-width: 80vw;
+    justify-content: space-between;
+    font-size: 1.1rem;
+    color: #b3b3b3;
+    letter-spacing: 1px;
+
+    .tuner-freq {
+      font-weight: 400;
+      color: #ffffff;
+      text-shadow: 0 0 6px rgba(0, 149, 255, 0.27);
+      padding: 1rem;
+      max-height: 2rem;
+      font-size: 0.75rem;
+    }
+
+    .tuner-mode {
+      font-weight: 600;
+      color: #b3b3b3;
+      text-shadow: 0 0 4px rgba(255, 255, 255, 0.15);
+    }
+  }
+
+  .tuner-expected-hz {
+    color: #888;
+    font-size: 0.75rem;
+
+    text-align: center;
+  }
+
+  .tuner-arc-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    
+    .tuner-arc {
+      width: 100%;
+      height: 10%;
+      display: block;
+    }
+
+    .tuner-arc-svg {
+      overflow: visible;
+      transition: transform 0.25s ease-out;
+      transform-origin: center;
+    }
+  }
+
+  .tuner-note-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.25rem;
+    padding-bottom: 5rem;
+
+    .tuner-arrow {
+      font-size: 2.2rem;
+      color: #ffe066;
+      width: 2.2rem;
+      text-align: center;
+      transition: opacity 0.25s ease;
+      user-select: none;
+      &:first-child {
+        margin-right: 5rem;
+      }
+    }
+  }
+}
+
+// 🔥 Arc visual feedback styles
+.tuner-arc-segment {
+  transform-origin: center;
+  transform: scale(1.02);
+  transition: all 0.15s ease;
+}
+
+// Glowing center segment (when in tune)
+.glow-highlight {
+  filter: drop-shadow(0 0 12px #ffe066) drop-shadow(0 0 24px #ffe066);
+  stroke: #ffe066;
+  stroke-width: 3;
+}
+
+// Active segment highlight
+.highlighted {
+  filter: drop-shadow(0 0 8px #ffffff) brightness(1.25);
+  stroke: #ffffff;
+  stroke-width: 2;
+  z-index: 2;
+}
+
+// Pointer styling
+.tuner-pointer {
+  transform: translateY(-5px);
+  transition: all 0.25s ease;
+  display: none;
+}
+
+.pointer-glow {
+  filter: drop-shadow(0 0 6px #ffe066) brightness(1.15);
+}
+
+// Slight tilt for visual motion
+.tuner-arc-tilt {
+  transform: rotate(1deg);
+}
+
+.headstock {
+  max-height: 20rem;
+}
+
+.arrow-container {
+  width: auto;
+  display: flex;
+  flex-direction: row;
+  width: auto;
+
+  &:first-child {
+    margin-left: 5rem;
+  }
+}
+.toggle-info-button {
+  background-color: rgba(0, 0, 0, 0); // semi-transparent black
+  border: none;
+  border-radius: 6px;
+  min-height: 30px;
+  min-width: 30px;
+  max-height: 30px;
+  max-width: 30px;
+  padding: 4px;
+  margin: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+
+  // On hover, intensify background and slightly scale
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.85);
+    transform: scale(1.1);
+  }
+
+  // Optional active/pressed effect
+  &:active {
+    transform: scale(0.95);
+  }
+
+  // If you want to support keyboard users
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  // Target SVG or <img> icon inside the button
+  &__icon {
+    width: 20px;
+    height: 20px;
+    fill: white; // for inline SVG
+    color: white; // fallback
+  }
+
+  // If you're using an <img> tag instead of inline SVG
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: invert(1); // makes black SVG white if not styled in the SVG itself
+    pointer-events: none;
+  }
+}
+
+
+.arc-center-note {
+  font-size: 4.2rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 0 18px rgba(0, 149, 255, 0.33), 0 0 2px #ffffff;
+  letter-spacing: 2px;
+  min-width: 2.5rem;
+  text-align: center;
+  margin: auto;
+}
