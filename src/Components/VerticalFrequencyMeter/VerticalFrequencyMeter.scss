@@ -1,0 +1,24 @@
+.vertical-frequency-meter {
+  position: relative;
+  display: inline-block;
+  margin: 10px;
+
+  .meter-track {
+    width: 4px;
+    height: 100%;
+    background: #333;
+    margin: 0 auto;
+    border-radius: 2px;
+    position: relative;
+  }
+
+  .meter-indicator {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 4px;
+    border-radius: 2px;
+    transition: top 0.05s linear, background 0.1s linear;
+  }
+}

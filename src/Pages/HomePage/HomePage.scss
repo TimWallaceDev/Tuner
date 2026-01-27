@@ -1,3 +1,4 @@
+@use '../../styles/partials/variables' as *;
 .home-page {
   min-height: 100vh;
   background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
@@ -17,6 +18,7 @@
 
   .tuner-container {
     background: rgba(255, 255, 255, 0.05);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     border-radius: 15px;
     padding: 2rem;
@@ -25,8 +27,52 @@
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
+  .instrument-select-container {
+    margin-Bottom: 1.5rem; 
+    display: 'flex';
+    flex-direction:column;
+    gap : 1rem;
+
+  }
+  .custom-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+    padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg fill='currentColor' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414L10 11.414 7.293 8.707a1 1 0 010-1.414z' /%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+    }
+  }
+  .option {
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
+    padding: 0.5rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-bottom: 1px solid var(--color-border-light);
+  }
   .note-display {
     font-size: 4rem;
     font-weight: bold;

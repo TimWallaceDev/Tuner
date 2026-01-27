@@ -222,4 +222,58 @@ export const INSTRUMENTS_DATA = {
       },
     },
   },
-};
+
+    cello: {
+      name: "Cello",
+      defaultTuning: "standard",
+      tunings: {
+        standard: {
+          name: "Standard (CGDA)",
+          notes: ["C2", "G2", "D3", "A3"],
+        },
+        solo: {
+          name: "Solo Tuning",
+          notes: ["C#2", "G#2", "D#3", "A#3"],
+        },
+      },
+    },
+  
+    violin: {
+      name: "Violin",
+      defaultTuning: "standard",
+      tunings: {
+        standard: {
+          name: "Standard (GDAE)",
+          notes: ["G3", "D4", "A4", "E5"],
+        },
+        baroque: {
+          name: "Baroque (one semitone lower)",
+          notes: ["F#3", "C#4", "G#4", "D#5"],
+        },
+      },
+    },
+  
+    bass_guitar: {
+      name: "Bass Guitar",
+      defaultTuning: "standard",
+      tunings: {
+        standard: {
+          name: "Standard (EADG)",
+          notes: ["E1", "A1", "D2", "G2"],
+        },
+        drop_d: {
+          name: "Drop D",
+          notes: ["D1", "A1", "D2", "G2"],
+        },
+        five_string: {
+          name: "5-String Standard",
+          notes: ["B0", "E1", "A1", "D2", "G2"],
+        },
+        six_string: {
+          name: "6-String Standard",
+          notes: ["B0", "E1", "A1", "D2", "G2", "C3"],
+        },
+      },
+    },
+  };
+
